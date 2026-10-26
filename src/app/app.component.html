@@ -1,0 +1,56 @@
+<div class="app-shell">
+  <div class="mobile-overlay" *ngIf="sidebarOpen" (click)="sidebarOpen = false"></div>
+  <aside class="sidebar" [class.sidebar-open]="sidebarOpen">
+    <a class="brand" routerLink="/dashboard" aria-label="Covera home">
+      <span class="brand-mark"><span></span><span></span><span></span></span>
+      <span class="brand-name">covera<span class="brand-dot">.</span><small>POLICY OPERATIONS</small></span>
+    </a>
+
+    <div class="workspace-switcher">
+      <div class="workspace-icon">CO</div>
+      <div class="workspace-meta"><strong>Covera Insurance</strong><span>Operations workspace</span></div>
+      <span class="switch-chevron">⌄</span>
+    </div>
+
+    <nav class="side-navigation" aria-label="Main navigation">
+      <ng-container *ngFor="let section of ['WORKSPACE', 'POLICY OPERATIONS', 'CUSTOMER CARE']">
+        <p class="nav-section" *ngIf="hasNavigationSection(section)">{{ section }}</p>
+        <a *ngFor="let item of navigation" [hidden]="item.section !== section" class="nav-link" [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <span class="nav-icon">{{ item.icon }}</span><span>{{ item.label }}</span>
+          <span class="active-marker"></span>
+        </a>
+      </ng-container>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <div class="help-icon">?</div>
+        <strong>Need a hand?</strong>
+        <p>Find help with your policy operations workspace.</p>
+        <a href="mailto:support@covera.example">Contact support <span>↗</span></a>
+      </div>
+      <div class="profile-row">
+        <div class="avatar avatar-purple">OP</div>
+        <div class="profile-meta"><strong>Operations Admin</strong><span>Administrator</span></div>
+        <span class="profile-more">•••</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-button mobile-menu" (click)="sidebarOpen = !sidebarOpen" aria-label="Toggle navigation">☰</button>
+        <div class="breadcrumb"><span>Workspace</span><span class="crumb-divider">/</span><strong>{{ pageTitle }}</strong></div>
+      </div>
+      <div class="topbar-actions">
+        <span class="environment-pill" *ngIf="demoMode$ | async"><span></span> Demo data</span>
+        <span class="environment-pill live-pill" *ngIf="!(demoMode$ | async)"><span></span> API ready</span>
+        <div class="topbar-divider"></div>
+        <button class="topbar-profile" routerLink="/dashboard"><span class="avatar avatar-green">OA</span><span class="topbar-profile-text"><strong>Operations</strong><small>Admin workspace</small></span><span class="chevron">⌄</span></button>
+      </div>
+    </header>
+    <section class="page-content"><router-outlet></router-outlet></section>
+    <footer class="app-footer"><span>© 2026 Covera Insurance</span><span>Built for clearer policy operations <b>✳</b></span></footer>
+  </main>
+</div>

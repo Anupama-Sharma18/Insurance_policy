@@ -1,0 +1,46 @@
+<div class="dashboard-page">
+  <div class="page-heading dashboard-heading">
+    <div><p class="eyebrow">{{ today | date:'EEEE, MMMM d, y' | uppercase }}</p><h1>Good morning, Admin <span class="wave">✳</span></h1><p>Here’s what’s happening across your policy operations today.</p></div>
+    <div class="heading-actions"><button class="secondary-button" routerLink="/renewals"><span class="button-icon">⟳</span> View renewals</button><button class="primary-button" routerLink="/policies"><span class="button-icon">＋</span> Create policy</button></div>
+  </div>
+
+  <div class="dashboard-banner">
+    <div class="banner-art"><span class="art-circle circle-one"></span><span class="art-circle circle-two"></span><span class="art-spark">✦</span><div class="art-document"><span></span><span></span><span></span><b>✓</b></div></div>
+    <div class="banner-copy"><span class="banner-kicker">YOUR OPERATIONS, IN SYNC</span><h2>Everything covered.<br><em>Every detail in view.</em></h2><p>Manage policy lifecycles, customer requests and renewals from one calm workspace.</p><div class="banner-links"><a routerLink="/policies">Explore policies <span>↗</span></a><span class="banner-separator">·</span><a routerLink="/servicing">Open service desk <span>↗</span></a></div></div>
+    <div class="banner-side-note"><span class="pulse-dot"></span><span>Workspace overview</span><strong>Live at a glance</strong><small>Updated just now</small></div>
+  </div>
+
+  <div class="metric-grid" *ngIf="!loading; else metricLoading">
+    <article class="metric-card"><div class="metric-top"><span class="metric-label">Total policies</span><span class="metric-icon icon-violet">▤</span></div><div class="metric-value">{{ policies.length | number }}</div><div class="metric-foot"><span class="metric-trend trend-violet">{{ activePercent }}% active</span><span>of all policies</span></div><div class="metric-line"><span [style.width.%]="activePercent"></span></div></article>
+    <article class="metric-card"><div class="metric-top"><span class="metric-label">Active policies</span><span class="metric-icon icon-green">✓</span></div><div class="metric-value">{{ activePolicies | number }}</div><div class="metric-foot"><span class="metric-trend trend-green">In force</span><span>coverage currently active</span></div><div class="metric-line green-line"><span [style.width.%]="activePercent"></span></div></article>
+    <article class="metric-card"><div class="metric-top"><span class="metric-label">Renewals to review</span><span class="metric-icon icon-amber">⟳</span></div><div class="metric-value">{{ openRenewals | number }}</div><div class="metric-foot"><span class="metric-trend trend-amber">Needs attention</span><span>awaiting next step</span></div><div class="metric-line amber-line"><span [style.width.%]="renewals.length ? openRenewals/renewals.length*100 : 0"></span></div></article>
+    <article class="metric-card"><div class="metric-top"><span class="metric-label">Open service requests</span><span class="metric-icon icon-blue">◈</span></div><div class="metric-value">{{ openRequests | number }}</div><div class="metric-foot"><span class="metric-trend trend-blue">{{ pendingClosures }} pending closure{{ pendingClosures === 1 ? '' : 's' }}</span><span>across customer care</span></div><div class="metric-line blue-line"><span [style.width.%]="requestAttentionPercent"></span></div></article>
+  </div>
+  <ng-template #metricLoading><div class="metric-grid"><div class="metric-card" *ngFor="let item of [1,2,3,4]"><div class="loading-bar"><span></span></div><div class="metric-value skeleton">&nbsp;</div></div></div></ng-template>
+
+  <div class="dashboard-content-grid">
+    <section class="card policies-card">
+      <div class="card-header"><div><h2 class="card-title">Recent policies</h2><p class="card-subtitle">A quick look at the latest policy records</p></div><a class="text-link" routerLink="/policies">View all <span>→</span></a></div>
+      <div class="table-wrap" *ngIf="recentPolicies.length; else noPolicies"><table><thead><tr><th>Policy</th><th>Product</th><th>Expiry date</th><th>Status</th></tr></thead><tbody><tr *ngFor="let policy of recentPolicies"><td><div class="table-primary">{{ policy.policyNumber }}</div><div class="table-secondary">Customer #{{ policy.customerId }}</div></td><td><div class="product-cell"><span class="product-mini">{{ productLabel(policy.productId).slice(0,1) }}</span>{{ productLabel(policy.productId) }}</div></td><td>{{ policy.expiryDate | date:'dd MMM yyyy' }}</td><td><app-status-badge [status]="policy.policyStatus"></app-status-badge></td></tr></tbody></table></div>
+      <ng-template #noPolicies><div class="empty-state"><div class="empty-icon">▤</div><strong>No policies to show yet</strong>Connect the Policy Insurance service or create a policy.</div></ng-template>
+      <div class="card-bottom-link"><a routerLink="/policies">Open policy management <span>↗</span></a></div>
+    </section>
+
+    <section class="card activity-card">
+      <div class="card-header"><div><h2 class="card-title">Quick actions</h2><p class="card-subtitle">Common tasks, one click away</p></div><span class="sparkle-icon">✦</span></div>
+      <div class="quick-action-list">
+        <a routerLink="/policies" class="quick-action"><span class="quick-icon quick-purple">＋</span><span class="quick-copy"><strong>Create a policy</strong><small>Start a new policy record</small></span><span class="quick-arrow">↗</span></a>
+        <a routerLink="/renewals" class="quick-action"><span class="quick-icon quick-amber">⟳</span><span class="quick-copy"><strong>Process a renewal</strong><small>Review payment and confirmation</small></span><span class="quick-arrow">↗</span></a>
+        <a routerLink="/servicing" class="quick-action"><span class="quick-icon quick-blue">◈</span><span class="quick-copy"><strong>Review service requests</strong><small>Respond to customer needs</small></span><span class="quick-arrow">↗</span></a>
+        <a routerLink="/cancellations" class="quick-action"><span class="quick-icon quick-red">↗</span><span class="quick-copy"><strong>Review cancellation</strong><small>Approve or reject a request</small></span><span class="quick-arrow">↗</span></a>
+      </div>
+      <div class="service-health"><div class="health-title"><span>Workspace health</span><span class="health-good"><i></i> {{ (loading ? 'Checking' : 'Ready') }}</span></div><div class="health-caption">{{ (loading ? 'Loading your operations summary.' : 'Your key workflows are available from the navigation.') }}</div><div class="health-progress"><span [style.width.%]="loading ? 38 : 100"></span></div></div>
+    </section>
+  </div>
+
+  <section class="card renewals-card">
+    <div class="card-header"><div><h2 class="card-title">Renewal pipeline</h2><p class="card-subtitle">Follow up on policies that need another step</p></div><a class="text-link" routerLink="/renewals">Manage renewals <span>→</span></a></div>
+    <div class="table-wrap" *ngIf="upcomingRenewals.length; else noRenewals"><table><thead><tr><th>Renewal</th><th>Policy number</th><th>Premium</th><th>Renewal date</th><th>Status</th><th></th></tr></thead><tbody><tr *ngFor="let renewal of upcomingRenewals"><td><div class="table-primary">#REN-{{ renewal.renewalId }}</div><div class="table-secondary">Renewal ID {{ renewal.renewalId }}</div></td><td>{{ policyNo(renewal.policyId) }}</td><td class="premium-value">{{ renewal.premiumAmount | currency:'INR':'symbol':'1.0-0' }}</td><td>{{ renewal.renewalDate | date:'dd MMM yyyy' }}</td><td><app-status-badge [status]="renewal.renewalStatus"></app-status-badge></td><td><a routerLink="/renewals" class="table-action">Review</a></td></tr></tbody></table></div>
+    <ng-template #noRenewals><div class="empty-state"><div class="empty-icon">⟳</div><strong>No renewals in the pipeline</strong>New renewal requests will appear here.</div></ng-template>
+  </section>
+</div>
